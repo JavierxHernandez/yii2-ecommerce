@@ -53,18 +53,11 @@ AppAsset::register($this);
             <!-- Divider -->
             <hr class="sidebar-divider">
 
-            <!-- Nav Item - Charts -->
+            <!-- Nav Item - Products -->
             <li class="nav-item">
                 <a class="nav-link" href="<?php echo Url::to('/product/index') ?>">
                     <i class="fas fa-fw fa-chart-area"></i>
                     <span>Products</span></a>
-            </li>
-
-            <!-- Nav Item - Tables -->
-            <li class="nav-item">
-                <a class="nav-link" href="tables.html">
-                    <i class="fas fa-fw fa-table"></i>
-                    <span>Product Categories</span></a>
             </li>
 
             <!-- Divider -->
