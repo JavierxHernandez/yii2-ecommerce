@@ -13,6 +13,8 @@ use yii\web\IdentityInterface;
  *
  * @property integer $id
  * @property string $username
+ * @property string $firstname
+ * @property string $lastname
  * @property string $password_hash
  * @property string $password_reset_token
  * @property string $verification_token
@@ -213,6 +215,7 @@ class User extends ActiveRecord implements IdentityInterface
 
     public function getDisplayName()
     {
-        return $this->username;
+        $fullName = trim($this->firstname.' '.$this->lastname);
+        return $fullName ? $fullName : $this->email;
     }
 }
