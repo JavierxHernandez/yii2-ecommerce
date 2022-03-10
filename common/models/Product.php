@@ -6,6 +6,7 @@ use Yii;
 use yii\behaviors\BlameableBehavior;
 use yii\behaviors\TimestampBehavior;
 use yii\helpers\FileHelper;
+use yii\helpers\StringHelper;
 use yii\helpers\VarDumper;
 
 /**
@@ -154,6 +155,11 @@ class Product extends \yii\db\ActiveRecord
         return $success;
     }
 
+    /**
+     * Get the path to the images
+     *
+     * @return string
+     */
     public function getProductImageUrl()
     {
         if (!$this->image) {
@@ -161,5 +167,15 @@ class Product extends \yii\db\ActiveRecord
         }
 
         return Yii::$app->params['frontendUrl'] . '/storage' . $this->image;
+    }
+    
+    /**
+     * Get a short product description
+     *
+     * @return string
+     */
+    public function getShortDescription()
+    {
+        return StringHelper::truncateWords(strip_tags($this->description), 10);
     }
 }
