@@ -76,7 +76,7 @@ class Product extends \yii\db\ActiveRecord
             'updated_by' => 'Updated By',
         ];
     }
-    
+
     public function behaviors()
     {
         return [
@@ -137,25 +137,29 @@ class Product extends \yii\db\ActiveRecord
     public function save($runValidation = true, $attributeNames = null)
     {
         if ($this->imageFile) {
-            $this->image = '/products/'.Yii::$app->security->generateRandomString().'/'.$this->imageFile->name;
+            $this->image = '/products/' . Yii::$app->security->generateRandomString() . '/' . $this->imageFile->name;
         }
         $transaction = Yii::$app->db->beginTransaction();
         $success = parent::save($runValidation, $attributeNames);
 
-        if ($success) {
-            $fullPath = Yii::getAlias('@frontend/web/storage'.$this->image);
+        if ($success && $this->imageFile) {
+            $fullPath = Yii::getAlias('@frontend/web/storage' . $this->image);
             $dir = dirname($fullPath);
-            if (! FileHelper::createDirectory($dir) || ! $this->imageFile->saveAs($fullPath)) {
+            if (!FileHelper::createDirectory($dir) || !$this->imageFile->saveAs($fullPath)) {
                 $transaction->rollBack();
                 return false;
             }
-            $transaction->commit();
         }
+        $transaction->commit();
         return $success;
     }
 
     public function getProductImageUrl()
     {
-        return Yii::$app->params['frontendUrl'].'/storage'.$this->image;
+        if (!$this->image) {
+            return Yii::$app->params['frontendUrl'] . '/img/no_image.svg';
+        }
+
+        return Yii::$app->params['frontendUrl'] . '/storage' . $this->image;
     }
 }
