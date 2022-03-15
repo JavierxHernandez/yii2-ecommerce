@@ -14,8 +14,8 @@ $this->title = 'Signup';
     <div class="row justify-content-center">
         <div class="col-lg-5">
             <h1><?= Html::encode($this->title) ?></h1>
-        
             <p>Please fill out the following fields to signup:</p>
+            
             <?php $form = ActiveForm::begin(['id' => 'form-signup']); ?>
 
                 <?= $form->field($model, 'username')->textInput(['autofocus' => true]) ?>
