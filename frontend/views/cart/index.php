@@ -15,6 +15,7 @@ use yii\helpers\Url;
         <h3>Your card items</h3>
     </div>
     <div class="card-body p-0">
+        <?php if(!empty($cartItems)): ?>
         <table class="table table-hover">
             <tr>
                 <th>Product</th>
@@ -48,5 +49,8 @@ use yii\helpers\Url;
                 <a class="btn btn-primary" href="<?php echo Url::to(['cart/checkout']) ?>">Checkout</a>
             </div>
         </div>
+        <?php else: ?>
+            <p class="text-muted text-center p-5">There are no items in the card</p>
+        <?php endif; ?>
     </div>
 </div>
