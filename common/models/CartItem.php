@@ -18,13 +18,30 @@ use Yii;
 class CartItem extends \yii\db\ActiveRecord
 {
     const SESSION_KEY = 'CART_ITEMS';
-    
+
     /**
      * {@inheritdoc}
      */
     public static function tableName()
     {
         return '{{%cart_items}}';
+    }
+
+    public static function getTotalQuantityForUser($currentUserId)
+    {
+        if (isGuest()) {
+            $cartItems = \Yii::$app->session->get(CartItem::SESSION_KEY, []);
+            $sum = 0;
+            foreach ($cartItems as $cartItem) {
+                $sum += $cartItem['quantity'];
+            }
+        } else {
+            $sum = CartItem::findBySql(
+                "SELECT SUM(quantity) FROM cart_items WHERE created_by = :userId", ['userId' => $currentUserId]
+            )->scalar();
+        }
+
+        return $sum;
     }
 
     /**

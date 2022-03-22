@@ -31,7 +31,7 @@ class CartItemQuery extends \yii\db\ActiveQuery
     {
         return parent::one($db);
     }
-    
+
     /**
      * Get the user id
      *

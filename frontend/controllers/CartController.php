@@ -8,10 +8,25 @@ use common\models\Product;
 use frontend\base\Controller as BaseController;
 use yii\filters\ContentNegotiator;
 use yii\filters\VerbFilter;
+use yii\helpers\VarDumper;
 use yii\web\NotFoundHttpException;
 use yii\web\Response;
 class CartController extends BaseController
 {
+    /**
+     * This function tells the controller that the content negotiation will be handled by the
+     * ContentNegotiator class. 
+     * 
+     * The only actions that will be affected by the content negotiation are the add action. 
+     * 
+     * The formats that will be accepted are JSON. 
+     * 
+     * The VerbFilter class will be used to filter the delete action. 
+     * 
+     * The delete action will only be affected by POST and DELETE HTTP verbs.
+     * 
+     * @return The ContentNegotiator class is used to return the correct format.
+     */
     public function behaviors()
     {
         return [
@@ -31,6 +46,12 @@ class CartController extends BaseController
             ];
     }
 
+    /**
+     * If the user is logged in, get all the cart items from the database. If the user is not logged
+     * in, get the cart items from the session
+     *
+     * @return The view file index.php is being rendered.
+     */
     public function actionIndex()
     {
         if (Yii::$app->user->isGuest) {
@@ -57,6 +78,12 @@ class CartController extends BaseController
         ]);
     }
 
+    /**
+     * If the user is logged in, add the product to the user's cart. If the user is not logged in, add
+     * the product to the session
+     *
+     * @return The success flag and errors array.
+     */
     public function actionAdd()
     {
         $id = Yii::$app->request->post('id');
@@ -64,8 +91,8 @@ class CartController extends BaseController
 
         if (! $product) {
             throw new NotFoundHttpException("Product does not exits");
-        } 
-        
+        }
+
         if (Yii::$app->user->isGuest) {
 
             $cartItems = Yii::$app->session->get(CartItem::SESSION_KEY, []);
@@ -90,7 +117,7 @@ class CartController extends BaseController
                 ];
                 $cartItems[] = $cartItem;
             }
-            
+
             Yii::$app->session->set(CartItem::SESSION_KEY, $cartItems);
 
         } else {
@@ -120,6 +147,11 @@ class CartController extends BaseController
 
     }
 
+     /**
+      * Delete a product from the cart
+      * @param id The ID of the product to be deleted.
+      * @return Nothing.
+      */
      public function actionDelete($id)
     {
         if (isGuest()) {
@@ -136,5 +168,44 @@ class CartController extends BaseController
         }
 
         return $this->redirect(['index']);
+    }
+
+    /**
+     * If the user is logged in, update the quantity of the product in the user's cart. If the user is
+     * not logged in, update the quantity of the product in the session
+     * 
+     * @return The total quantity of items in the cart.
+     */
+    public function actionChangeQuantity()
+    {
+        $id = Yii::$app->request->post('id');
+        $product = Product::find()->id($id)->published()->one();
+        if (! $product) {
+            throw  new NotFoundHttpException("Product does not exist");
+        }
+        $quantity = Yii::$app->request->post('quantity');
+        if ($quantity < 1 || $quantity === '') {
+            $quantity = 1;
+        }
+
+        if (isGuest()) {
+            $cartItems = Yii::$app->session->get(CartItem::SESSION_KEY, []);
+
+            foreach ($cartItems as &$cartItem) {
+                if ($cartItem['id'] == $id) {
+                    $cartItem['quantity'] = $quantity;
+                    break;
+                }
+            }
+            Yii::$app->session->set(CartItem::SESSION_KEY, $cartItems);
+
+        } else {
+            $cartItem = CartItem::find()->userId(currUserId())->productId($id)->one();
+            if ($cartItem) {
+                $cartItem->quantity = $quantity;
+                $cartItem->save();
+            }
+        }
+        return CartItem::getTotalQuantityForUser(currUserId());
     }
 }
