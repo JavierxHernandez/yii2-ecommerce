@@ -228,7 +228,7 @@ class User extends ActiveRecord implements IdentityInterface
     {
         return $this->hasMany(UserAddress::class, ['user_id' => 'id']);
     }
-    
+
     public function getAddress(): ?UserAddress
     {
         $address = $this->addresses[0] ?? new UserAddress();
