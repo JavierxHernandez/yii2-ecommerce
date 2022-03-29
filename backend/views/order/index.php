@@ -24,23 +24,39 @@ $this->params['breadcrumbs'][] = $this->title;
     <?php // echo $this->render('_search', ['model' => $searchModel]); ?>
 
     <?= GridView::widget([
+        'id' => 'ordersTable',
         'dataProvider' => $dataProvider,
         'filterModel' => $searchModel,
         'columns' => [
-            ['class' => 'yii\grid\SerialColumn'],
-
             'id',
-            'total_price',
-            'status',
-            'firstname',
-            'lastname',
+            [
+                'attribute' => 'fullname',
+                'content' => function($model) {
+                    return $model->firstname . ' ' . $model->lastname;
+                },
+            ],
+            'total_price:currency',
             //'email:email',
             //'transaction_id',
             //'paypal_order_id',
-            //'created_at',
+            [
+                'attribute' => 'status',
+                'content' => function($model) {
+                    if ($model->status === Order::STATUS_COMPLETED) {
+                        return Html::tag('span', 'Paid', ['class' => 'badge badge-success']);
+                    } else if ($model->status === Order::STATUS_DRAFT){
+                        return Html::tag('span', 'Unpaid', ['class' => 'badge badge-secondary']);
+                    } else {
+                        return Html::tag('span', 'Failed', ['class' => 'badge badge-danger']);
+                    }
+                }
+
+            ],
+            'created_at:datetime',
             //'created_by',
             [
                 'class' => ActionColumn::class,
+                'template' => '{view} {delete}',
                 'urlCreator' => function ($action, Order $model, $key, $index, $column) {
                     return Url::toRoute([$action, 'id' => $model->id]);
                  }
