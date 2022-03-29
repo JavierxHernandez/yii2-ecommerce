@@ -8,7 +8,9 @@
  * @var float $totalPrice
  */
 
+use common\models\Product;
 use yii\bootstrap4\ActiveForm;
+use yii\bootstrap4\Html;
 use yii\helpers\Url;
 
 ?>
@@ -56,15 +58,35 @@ use yii\helpers\Url;
                 <h5>Checkout information</h5>
             </div>
             <div class="card-body">
+            <table class="table table-hover">
+            <tr>
+                <th>Image</th>
+                <th>Product</th>
+                <th>Quantity</th>
+                <th>Total Price</th>
+            </tr>
+            <tbody>
+                <?php foreach ($cartItems as $cartItem) : ?>
+                    <tr data-id="<?php echo $cartItem['id'] ?>" data-url="<?php echo Url::to(['/cart/change-quantity'])?>">
+                        <td><img src="<?php echo Product::getProductImageUrl($cartItem['image']) ?>" alt="<?php echo $cartItem['name'] ?>" style="width:100px"></td>
+                        <td><?php echo $cartItem['name'] ?></td>
+                        <td><?php echo $cartItem['quantity'] ?></td>
+                        <td><?php echo Yii::$app->formatter->asCurrency($cartItem['total_price']) ?></td>
+                    </tr>
+                <?php endforeach; ?>
+            </tbody>
+        </table>
                 <table class="table">
-                    <tr>
                         <td>
-                            <?php echo $productQuantity ?> Products
+                            <b>Total Items</b>
+                        </td>
+                        <td class="text-right">
+                            <?php echo $productQuantity ?>
                         </td>
                     </tr>
                     <tr>
                         <td>
-                            Total Price
+                            <b>Total Price</b>
                         </td>
                         <td class="text-right">
                             <?php echo Yii::$app->formatter->asCurrency($totalPrice) ?>
