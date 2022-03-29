@@ -154,8 +154,8 @@ class Product extends \yii\db\ActiveRecord
         $transaction->commit();
         return $success;
     }
-    
-    public function formatImageUrl()
+
+    public function ImageUrl()
     {
         return self::getProductImageUrl($this->image);
     }
@@ -173,7 +173,7 @@ class Product extends \yii\db\ActiveRecord
 
         return Yii::$app->params['frontendUrl'] . '/storage' . $image;
     }
-    
+
     /**
      * Get a short product description
      *
