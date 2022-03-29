@@ -9,10 +9,13 @@
  */
 
 use yii\bootstrap4\ActiveForm;
+use yii\helpers\Url;
 
 ?>
+
+
 <?php $form = ActiveForm::begin([
-    'action' => [''],
+    'id' => 'checkout-form',
 ]); ?>
 
 <div class="row justify-content-center">
@@ -66,9 +69,9 @@ use yii\bootstrap4\ActiveForm;
                         <td class="text-right">
                             <?php echo Yii::$app->formatter->asCurrency($totalPrice) ?>
                         </td>
-
                     </tr>
                 </table>
+
                 <p class="text-right mt-3">
                     <button class="btn btn-secondary">Checkout</button>
                 </p>
@@ -76,7 +79,4 @@ use yii\bootstrap4\ActiveForm;
         </div>
     </div>
 </div>
-
-
-
 <?php ActiveForm::end(); ?>
