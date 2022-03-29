@@ -122,8 +122,12 @@ class CartItem extends \yii\db\ActiveRecord
 
     public static function getItemsForUser()
     {
-        return CartItem::findBySql(
-            "
+        if (isGuest()) {
+            $cartItems = Yii::$app->session->get(CartItem::SESSION_KEY, []);
+        } else {
+
+            $cartItems = CartItem::findBySql(
+                "
                 SELECT
                     c.product_id as id,
                     p.image,
@@ -135,9 +139,20 @@ class CartItem extends \yii\db\ActiveRecord
                     cart_items c LEFT JOIN products p ON p.id = c.product_id
                 WHERE
                     c.created_by = :userId",
-            [
-                'userId' => currUserId(),
-            ]
-        )->asArray()->all();
+                [
+                    'userId' => currUserId(),
+                ]
+            )->asArray()->all();
+        }
+        return $cartItems;
+    }
+
+    public static function clearCartItemsForUser($currUserId)
+    {
+        if (isGuest()) {
+            Yii::$app->session->remove(CartItem::SESSION_KEY);
+        } else {
+            CartItem::deleteAll(['created_by' => $currUserId]);
+        }
     }
 }
